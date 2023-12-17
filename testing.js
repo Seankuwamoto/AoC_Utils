@@ -51,3 +51,13 @@ let myArr2 = new U.array(new U.range(45, 3), -10);
 
     let myArr2 = new U.array(myArr);
 }
+
+const C = U.characters;
+
+console.log(
+    C.cornerDR + C.segmentLR + C.intersectionDLR + C.segmentLR + C.cornerDL + '\n' +
+    C.segmentUD + " " + C.segmentUD + " " + C.segmentUD + '\n' +
+    C.intersectionRUD + C.segmentLR + C.intersectionLRUD + C.segmentLR + C.intersectionLUD + '\n' +
+    C.segmentUD + " " + C.segmentUD + " " + C.segmentUD + '\n' +
+    C.cornerUR + C.segmentLR + C.intersectionULR + C.segmentLR + C.cornerUL
+)  

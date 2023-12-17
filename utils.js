@@ -2789,6 +2789,11 @@ const characters = {
     cornerDR: "\u250f",
     segmentUD: "\u2503",
     segmentLR: "\u2501",
+    intersectionULR: "\u253b",
+    intersectionDLR: "\u2533",
+    intersectionLUD: "\u252b",
+    intersectionRUD: "\u2523",
+    intersectionLRUD: "\u254b",
 }
 // TODOS:
 // - finish basic tests
