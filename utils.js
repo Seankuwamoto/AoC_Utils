@@ -378,21 +378,21 @@ class array {
         // Prints extra coordinate helpers if coords is true.
         if (coords) {
             let linestringLength =  getLineString(this.array[0]).replace(/\x1b\[[0-9]*m/g, "").length;
-            console.log("   ", String(this.range2.start) + String(this.range2.end).padStart(linestringLength - 1, " "));
-            console.log("   +".padEnd(linestringLength + 4, "-"))
+            console.log("    ", String(this.range2.start) + String(this.range2.end).padStart(linestringLength - this.range2.start.toString().length, " "));
+            console.log("    +".padEnd(linestringLength + 3 + this.range2.start.toString().length, "-"))
         }
         for (let i = 0; i < this.array.length; i++) {
             let linestring = "";
             // Prints extra coordinate helpers if coords is true.
             if (coords) {
                 if (i == 0) {
-                    linestring += String(this.range1.start).padStart(3, " ") + "|";
+                    linestring += String(this.range1.start).padStart(4, " ") + "|";
                 }
                 else if (i == this.array.length - 1) {
-                    linestring += String(this.range1.end).padStart(3, " ") + "|";
+                    linestring += String(this.range1.end).padStart(4, " ") + "|";
                 }
                 else {
-                    linestring += "   |";
+                    linestring += "    |";
                 }
             }
             // Creates the string for the current line of the array to be printed.
@@ -499,26 +499,26 @@ class array {
      */
     neighbors(x, y, size = 0) {
         let [X, Y] = this.#normalizeInput(x, y);
-        if (typeof x == "object" || typeof x == "array") size = y;
+        if ((typeof x == "object" || typeof x == "array") && y != undefined) size = y;
         let neighbors = [];
         if (size == 0) {
-            if (this.range1.contains(x - 1) && this.range2.contains(y)) {
-                neighbors.push({x: x - 1, y: y});
+            if (this.range1.contains(X - 1) && this.range2.contains(Y)) {
+                neighbors.push({x: X - 1, y: Y});
             }
             if (this.range1.contains(x + 1) && this.range2.contains(y)) {
-                neighbors.push({x: x + 1, y: y});
+                neighbors.push({x: X + 1, y: Y});
             }
             if (this.range1.contains(x) && this.range2.contains(y - 1)) {
-                neighbors.push({x: x, y: y - 1});
+                neighbors.push({x: X, y: Y - 1});
             }
             if (this.range1.contains(x) && this.range2.contains(y + 1)) {
-                neighbors.push({x: x, y: y + 1});
+                neighbors.push({x: X, y: Y + 1});
             }
         }
         else {
-            for (let i = x - size; i <= x + size; i++) {
-                for (let j = y - size; j <= y + size; j++) {
-                    if (i == x && j == y) continue;
+            for (let i = X - size; i <= X + size; i++) {
+                for (let j = Y - size; j <= Y + size; j++) {
+                    if (i == X && j == Y) continue;
                     if (this.range1.contains(i) && this.range2.contains(j)) {
                         neighbors.push({x: i, y: j});
                     }
@@ -2731,7 +2731,46 @@ errMsg = "Test not implimented yet."
     },
     // by default, testAll and summarizeAll do not run tests of functions that print to the console. Use this function to run them.
     runPrintTests: function () {
+        function smoothStep(x) {
+            if (x < 0) return 0;
+            if (x > 1) return 1;
+            return x*x*(3 - 2*x);
+        }
+        for (let i = 0; i < 1000; i++) {
+        
+            // Takes up some time
+            for (let j = 0; j < 300000; j++) {
+                let x = Math.random();
+            }
+        
+            if (i % 7 == 0) {
+                console.clear();
+                loadingBar(smoothStep(i/1000), 30);
+            }
+        }
+        
+        for (let i = 0; i < 1000; i++) {
+        
+            // Takes up some time
+            for (let j = 0; j < 300000; j++) {
+                let x = Math.random();
+            }
+        
+            if (i % 7 == 0) {
+                console.clear();
+                loadingBar((1+Math.sin(i/100))/2, 40, "red");
+                loadingBar((1+Math.cos(i/100))/2, 30, "green");
+                loadingBar(1-(1+Math.sin(i/100))/2, 20, "blue");
+                loadingBar(1-(1+Math.cos(i/100))/2, 10, "purple");
+            }
+        }
         console.log('\x1b[35m%s\x1b[0m', "Running print tests...\n")
+
+        console.log('COLORS:')
+        for (let color of ["black", "red", "green", "orange", "blue", "purple", "cyan", "white"]) {
+            console.log(highlight(color.toUpperCase(), color));
+        }
+        console.log()
         this.arrayTests.print();
         this.arrayTests.printSpecial();
     }
@@ -2747,6 +2786,12 @@ const colorCodes = {
     cyan: "\x1b[36m",
     white: "\x1b[37m"
 }
+/**
+ * Highlights a string with a color.
+ * @param {String} string - The string to be highlighted
+ * @param {String} color - The color to highlight the string with. Can be "black", "red", "green", "orange", "blue", "purple", "cyan", or "white".
+ * @returns {String} - The highlighted string.
+ */
 function highlight(string, color = "green") {
     if (!colorCodes[color]) throw new Error(highlight("Invalid color: " + color, "red"));
     return  colorCodes[color] + string + "\x1b[0m";
