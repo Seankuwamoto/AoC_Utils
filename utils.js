@@ -379,7 +379,7 @@ class array {
         if (coords) {
             let linestringLength =  getLineString(this.array[0]).replace(/\x1b\[[0-9]*m/g, "").length;
             console.log("    ", String(this.range2.start) + String(this.range2.end).padStart(linestringLength - this.range2.start.toString().length, " "));
-            console.log("    +".padEnd(linestringLength + 3 + this.range2.start.toString().length, "-"))
+            console.log("    +".padEnd(linestringLength + 4, "-"))
         }
         for (let i = 0; i < this.array.length; i++) {
             let linestring = "";
@@ -654,24 +654,28 @@ function compareItems(a,b) {
     }
 }
 /**
- * returns the gcd of two numbers.
- * @param {number} a - Integer 1.
- * @param {number} b - Integer 2.
+ * returns the gcd of an arbitrary number of numbers.
  * @returns {number} - The gcd of the two numbers.
  */
-function gcd(a, b) {
-    if (typeof a != "number" || typeof b != "number") throw new Error(highlight("You can only find the gcd of two numbers.", "red"));
+function gcd() {
+    if (Array.isArray(arguments[0])) return gcd(...arguments[0]);
+    if (arguments.length > 2) return gcd(arguments[0], gcd(...Array.from(arguments).slice(1)));
+    let a = arguments[0];
+    let b = arguments[1];
+    if (typeof a != "number" || typeof b != "number") throw new Error(highlight("You can only find the gcd of numbers.", "red"));
     if (b == 0) return a;
     return gcd(b, a % b);
 }
 /** 
- * Returns the lcm of two numbers.
- * @param {number} a - Integer 1.
- * @param {number} b - Integer 2.
+ * Returns the lcm of an arbitrary number of numbers.
  * @returns {number} - The lcm of the two numbers.
  */
-function lcm(a, b) {
-    if (typeof a != "number" || typeof b != "number") throw new Error(highlight("You can only find the lcm of two numbers.", "red"));
+function lcm() {
+    if (Array.isArray(arguments[0])) return lcm(...arguments[0]);
+    if (arguments.length > 2) return lcm(arguments[0], lcm(...Array.from(arguments).slice(1)));
+    let a = arguments[0];
+    let b = arguments[1];
+    if (typeof a != "number" || typeof b != "number") throw new Error(highlight("You can only find the lcm of numbers.", "red"));
     return Math.abs(a * b) / gcd(a, b);
 }
 /**
