@@ -505,13 +505,13 @@ class array {
             if (this.range1.contains(X - 1) && this.range2.contains(Y)) {
                 neighbors.push({x: X - 1, y: Y});
             }
-            if (this.range1.contains(x + 1) && this.range2.contains(y)) {
+            if (this.range1.contains(X + 1) && this.range2.contains(Y)) {
                 neighbors.push({x: X + 1, y: Y});
             }
-            if (this.range1.contains(x) && this.range2.contains(y - 1)) {
+            if (this.range1.contains(X) && this.range2.contains(Y - 1)) {
                 neighbors.push({x: X, y: Y - 1});
             }
-            if (this.range1.contains(x) && this.range2.contains(y + 1)) {
+            if (this.range1.contains(X) && this.range2.contains(Y + 1)) {
                 neighbors.push({x: X, y: Y + 1});
             }
         }
