@@ -379,7 +379,7 @@ class array {
         if (coords) {
             let linestringLength =  getLineString(this.array[0]).replace(/\x1b\[[0-9]*m/g, "").length;
             console.log("    ", String(this.range2.start) + String(this.range2.end).padStart(linestringLength - this.range2.start.toString().length, " "));
-            console.log("    +".padEnd(linestringLength + 4, "-"))
+            console.log("    +".padEnd(linestringLength + 5, "-"))
         }
         for (let i = 0; i < this.array.length; i++) {
             let linestring = "";
@@ -2772,7 +2772,7 @@ errMsg = "Test not implimented yet."
 
         console.log('COLORS:')
         for (let color of ["black", "red", "green", "orange", "blue", "purple", "cyan", "white"]) {
-            console.log(highlight(color.toUpperCase(), color));
+            console.log(highlight(characters.square + " " + color.toUpperCase(), color));
         }
         console.log()
         this.arrayTests.print();

@@ -27,3 +27,6 @@ console.log(
     C.segmentUD + " " + C.segmentUD + " " + C.segmentUD + '\n' +
     C.cornerUR + C.segmentLR + C.intersectionULR + C.segmentLR + C.cornerUL
 )  
+
+let testRanges = new U.array(new U.range(10, -10), new U.range(10, -10));
+testRanges.printSpecial();
