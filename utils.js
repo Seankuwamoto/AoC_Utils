@@ -2800,6 +2800,12 @@ function highlight(string, color = "green") {
     if (!colorCodes[color]) throw new Error(highlight("Invalid color: " + color, "red"));
     return  colorCodes[color] + string + "\x1b[0m";
 }
+/**
+ * Creates a loading bar.
+ * @param {Number} percent - Value from 0 to 1.
+ * @param {Number} length - The physical length of the loading bar in characters. Does not affect length of the loading bar.
+ * @param {String} color color of the loading bar. Can be "black", "red", "green", "orange", "blue", "purple", "cyan", or "white".
+ */
 function loadingBar(percent, length = 20, color = "green") {
     let shades = [" ", characters.leftOneEighthBlock, characters.leftOneQuarterBlock, characters.leftThreeEighthsBlock, characters.leftHalfBlock, characters.leftFiveEighthsBlock, characters.leftThreeQuartersBlock, characters.leftSevenEighthsBlock, characters.square];
     console.log("        ", characters.cornerDR + new range(0, length + 6).forEach(_ => characters.segmentLR).join('') + characters.cornerDL);
