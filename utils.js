@@ -476,7 +476,6 @@ class array {
         }
         this.array = tempArray;
     }
-
     /**
      * Maps the array to a new array and returns a copy.
      * @param {function} func - A function to apply to each element in the array. It's called with (e, x, y, array) where e is the element.
@@ -584,6 +583,35 @@ class array {
         this.highlights.map(item => this.set(item.x, item.y, this.get(item.x, item.y).replace(/\x1b\[[0-9]*m/g, "")))
 
 
+    }
+    /**
+     * Finds the first instance of a specific element in the array
+     * @returns {Object} the x and y coordinates of the element, given by {x: x-coord, y: y-coord}.
+     */
+    find(element) {
+        for (let i = 0; i < this.array.length; i++) {
+            for (let j = 0; j < this.array.length; j++) {
+                if (compareItems(element, this.array[i][j])) return {x: this.range1.at(i), y: this.range2.at(j)};
+            }
+        }
+        console.warn(highlight("WARNING: element could not be found using array.find(). Returning undefined.", 'orange'));
+        return;
+    }
+    /** 
+     * Finds all instances of a specific element in the array
+     * @returns {Array} An array of x and y coordinates in the form of objects. (e.g. [{x: 1, y: 1}, {x: 2, y: 2}])
+     */
+    findAll(element) {
+        let returnArray = [];
+        for (let i = 0; i < this.array.length; i++) {
+            for (let j = 0; j < this.array.length; j++) {
+                if (compareItems(element, this.array[i][j])) returnArray.push({x: this.range1.at(i), y: this.range2.at(j)});
+            }
+        }
+        if (returnArray == []) {
+            console.warn(highlight("WARNING: element could not be found using array.findAll(). Returning empty list.", 'orange'));
+        }
+        return returnArray;
     }
 }
 /** Nothing to see here. Just your average jaiden. */ 
