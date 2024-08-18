@@ -186,9 +186,13 @@ class vector3D extends vector {
 class array {
     /**
      * Create an array. Can be called in 3 ways:
+     * 
      * array(range1, range2, fillItem) - Creates an array with the given ranges and fills it with the fillItem.
+     * 
      * array(2DArray) - Creates an array with the given 2D array.
+     * 
      * array(2DArray, fillItem) - Creates an array with the given 2D array and overrides it with the fillItem.
+     * 
      */
     constructor(range1, range2 = "undefined", fillItem = "undefined") {
 
@@ -440,7 +444,7 @@ class array {
     }
     // Applies a function to every item in the array.
     /**
-     * DEPRECATED. Use map instead.
+     * @deprecated Use map instead.
      * Applies a callback function to every item in the array.
      * @param {function} func - A function to apply to each element in the array. It's called with (e) where e is the element.
      * Transformations are applied in place and override the original array. They happen simultaneously.
@@ -457,7 +461,7 @@ class array {
         return;
     }
     /**
-     * DEPRECATED. Use map instead.
+     * @deprecated. Use map instead.
      * Applies a callback function to every item in the array.
      * @param {function} func - A function to apply to each element in the array. It's called with (array, x, y).
      * Transformations are applied in place and override the original array. They happen simultaneously.
@@ -937,7 +941,7 @@ function permutations(array) {
     if (typeof array == "string") perms = perms.map(x => x.join(""));
     return perms;
 }
-/** returns all the ways to have a length n string made only of characters a and b
+/** returns all the ways to make a length n string from a and b.
 * @param {number} n - The length of the string.
 * @param {string} a - The first character.
 * @param {string} b - The second character.
@@ -959,6 +963,16 @@ function abStrings(n, a, b, c) {
     return strings;
 
 }
+/**
+ * Gets the display length of a string. (i.e. how many characters wide it is when you console.log it.)
+ * @param {string} str - the string you want to know the length of
+ * @returns {Number} the length of the string
+ */
+function getStringDisplayLength(str) {
+    return str.replace(/\x1b\[[0-9]*m/g, "").length;
+}
+
+
 const tests = {
     arrayTests: {
         constructor: function (print = true) {
@@ -2874,5 +2888,6 @@ module.exports = {
     loadingBar,
     permutations,
     unique,
-    abStrings
+    abStrings,
+    getStringDisplayLength
 }
