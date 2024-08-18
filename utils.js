@@ -665,6 +665,9 @@ function exists(value) {
  * @returns {boolean}
  */
 function compareItems(a,b) {
+    if (a === undefined && b === undefined) {
+        console.warn(highlight("WARNING: compareItems recieved two undefineds. "));
+    }
     if (typeof a != typeof b) return false;
     if (Array.isArray(a) && Array.isArray(b)) {
         if (a.length != b.length) return false;
