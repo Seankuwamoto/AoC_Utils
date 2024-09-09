@@ -223,11 +223,11 @@ class array {
             const MAX_LENGTH = Math.max(...range1.map(x => x.length));
             this.range2 = new range(0,MAX_LENGTH-1);
     
-            // Fills empty spaces with spaces.
+            // Fills empty spaces with zeroes.
             for (let i = 0; i < range1.length; i++) {
                 for (let j = 0; j < MAX_LENGTH; j++) {
                     if (!exists(range1[i][j])) {
-                        range1[i].push(" ")
+                        range1[i].push(0)
                     }
                 }
             }
