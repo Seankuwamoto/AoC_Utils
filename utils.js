@@ -632,6 +632,36 @@ class array {
         }
         return returnArray;
     }
+    /**
+     * Replaces all instances of a specific element in the array with another element.
+     * @param {any} element - The element to replace.
+     * @param {any} replacement - The element to replace it with.
+     * @returns {array} - Returns a new array with the element replaced.
+     */
+    replaceAll(element, replacement) {
+        return this.map((x) => {
+            if (compareItems(x, element)) return replacement;
+            else return x;
+        }
+        );
+    }
+    /**
+     * Replaces the first instance of a specific element in the array with another element.
+     * @param {any} element - The element to replace.
+     * @param {any} replacement - The element to replace it with.
+     * @returns {array} - Returns a new array with the first instance of the element replaced.
+    */
+    replaceFirst(element, replacement) {
+        let found = false;
+        return this.map((x) => {
+            if (!found && compareItems(x, element)) {
+                found = true;
+                return replacement;
+            }
+            else return x;
+        });
+    }
+    
 }
 /** Nothing to see here. Just your average jaiden. */ 
 class jaiden {
@@ -1861,6 +1891,116 @@ errMsg = "Test not implimented yet."
             let isWorking = true;
             let errMsg = "No error message found.";
             const name = "neighbors";
+
+            // TESTS BEGIN HERE
+            if (!tests.arrayTests.constructor(false)) {
+                errMsg = "Unable to construct array.";
+                isWorking = undefined;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
+
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+            
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        clone: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "clone";
+
+            // TESTS BEGIN HERE
+            if (!tests.arrayTests.constructor(false)) {
+                errMsg = "Unable to construct array.";
+                isWorking = undefined;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
+
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+            
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        find: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "find";
+
+            // TESTS BEGIN HERE
+            if (!tests.arrayTests.constructor(false)) {
+                errMsg = "Unable to construct array.";
+                isWorking = undefined;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
+
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+            
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        findAll: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "findAll";
+
+            // TESTS BEGIN HERE
+            if (!tests.arrayTests.constructor(false)) {
+                errMsg = "Unable to construct array.";
+                isWorking = undefined;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
+
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+            
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        replaceAll: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "replaceAll";
+
+            // TESTS BEGIN HERE
+            if (!tests.arrayTests.constructor(false)) {
+                errMsg = "Unable to construct array.";
+                isWorking = undefined;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
+
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+            
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        replaceFirst: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "replaceFirst";
 
             // TESTS BEGIN HERE
             if (!tests.arrayTests.constructor(false)) {
