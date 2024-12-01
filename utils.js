@@ -15,6 +15,8 @@
 // Make it so that tests automatically detects when a function exists (i.e. is being exported) but doesn't have a test.
 // Remove vectors.
 
+const { type } = require("express/lib/response");
+
 
 /** A one dimensional range class. Contains various methods for working with ranges. */
 class range {
@@ -1095,6 +1097,103 @@ function ASCII(char) {
     if (typeof char != "string") throw new Error(highlight("You can only get the ASCII value of a string.", "red"));
     if (char.length != 1) throw new Error(highlight("You can only get the ASCII value of a single character.", "red"));
     return char.charCodeAt(0);
+}
+/**
+ * Highlights a string with a color.
+ * @param {String} string - The string to be highlighted
+ * @param {String} color - The color to highlight the string with. Can be "black", "red", "green", "orange", "blue", "purple", "cyan", or "white".
+ * @returns {String} - The highlighted string.
+ */
+function highlight(string, color = "green") {
+    if (!colorCodes[color]) throw new Error(highlight("Invalid color: " + color, "red"));
+    return  colorCodes[color] + string + "\x1b[0m";
+}
+/**
+ * Creates a loading bar.
+ * @param {Number} percent - Value from 0 to 1.
+ * @param {Number} length - The physical length of the loading bar in characters. Does not affect length of the loading bar.
+ * @param {String} color color of the loading bar. Can be "black", "red", "green", "orange", "blue", "purple", "cyan", or "white".
+ */
+function loadingBar(percent, length = 20, color = "green") {
+    let shades = [" ", characters.leftOneEighthBlock, characters.leftOneQuarterBlock, characters.leftThreeEighthsBlock, characters.leftHalfBlock, characters.leftFiveEighthsBlock, characters.leftThreeQuartersBlock, characters.leftSevenEighthsBlock, characters.square];
+    console.log("        ", characters.cornerDR + new range(0, length + 6).forEach(_ => characters.segmentLR).join('') + characters.cornerDL);
+    console.log("LOADING:", characters.segmentUD, (Math.floor(percent * 100) + "%").padStart(4, " "),  new range(0, length - 1).forEach(i => {
+        let value = 8 * (percent * length - i);
+        if (value < 0) value = 0;
+        if (value >= 8) value = 8;
+        let shade = highlight(shades[Math.floor(value)], color);
+        return shade;
+    }).join(''), characters.segmentUD);
+    console.log("        ", characters.cornerUR + new range(0, length + 6).forEach(_ => characters.segmentLR).join('') + characters.cornerUL);
+}
+const colorCodes = {
+    black: "\x1b[30m",
+    red: "\x1b[31m",
+    green: "\x1b[32m",
+    orange: "\x1b[33m",
+    blue: "\x1b[34m",
+    purple: "\x1b[35m",
+    cyan: "\x1b[36m",
+    white: "\x1b[37m"
+}
+const characters = {
+    blackSquare: colorCodes.black + "\u2588\x1b[0m",
+    redSquare: colorCodes.red + "\u2588\x1b[0m",
+    greenSquare: colorCodes.green + "\u2588\x1b[0m",
+    orangeSquare: colorCodes.orange + "\u2588\x1b[0m",
+    blueSquare: colorCodes.blue + "\u2588\x1b[0m",
+    purpleSquare: colorCodes.purple + "\u2588\x1b[0m",
+    cyanSquare: colorCodes.cyan + "\u2588\x1b[0m",
+    whiteSquare: colorCodes.white + "\u2588\x1b[0m",
+    lightShade: "\u2591",
+    mediumShade: "\u2592",
+    darkShade: "\u2593",
+    leftOneEighthBlock: "\u258f",
+    leftOneQuarterBlock: "\u258e",
+    leftThreeEighthsBlock: "\u258d",
+    leftHalfBlock: "\u258c",
+    leftFiveEighthsBlock: "\u258b",
+    leftThreeQuartersBlock: "\u258a",
+    leftSevenEighthsBlock: "\u2589",
+    square: "\u2588",
+    cornerUL: "\u251b",
+    cornerUR: "\u2517",
+    cornerDL: "\u2513",
+    cornerDR: "\u250f",
+    segmentUD: "\u2503",
+    segmentLR: "\u2501",
+    intersectionULR: "\u253b",
+    intersectionDLR: "\u2533",
+    intersectionLUD: "\u252b",
+    intersectionRUD: "\u2523",
+    intersectionLRUD: "\u254b",
+}
+// TODOS:
+// - finish basic tests
+// - Make tests for the array constructor when used with non-rectangular arrays.
+
+module.exports = {
+    range,
+    vector,
+    vector3D,
+    array,
+    jaiden,
+    exists,
+    compareItems,
+    gcd,
+    lcm,
+    primeFactors,
+    coprime,
+    parse,
+    is2DArray,
+    characters,
+    highlight,
+    loadingBar,
+    permutations,
+    unique,
+    abStrings,
+    ASCII,
+    getStringDisplayLength
 }
 
 
@@ -2179,6 +2278,11 @@ errMsg = "Test not implimented yet."
         },
         testAll: function () {
             console.log('\x1b[34m%s\x1b[0m', "Array tests:")
+            for (let method of Object.getOwnPropertyNames(array.prototype)) {
+                if (this[method] == undefined) {
+                    console.warn(highlight("- No test found for " + method + '!', 'orange'));
+                }
+            }
             for (let test in this) {
                 if (test == "testAll" || test == "quickTest" || test == "print" || test == "printSpecial") continue;
                 this[test]();
@@ -2496,6 +2600,11 @@ errMsg = "Test not implimented yet."
         },
         testAll: function () {
             console.log('\x1b[34m%s\x1b[0m', "Range tests:")
+            for (let method of Object.getOwnPropertyNames(range.prototype)) {
+                if (this[method] == undefined) {
+                    console.warn(highlight("- No test found for " + method + '!', 'orange'));
+                }
+            }
             for (let test in this) {
                 if (test == "testAll" || test == "quickTest") continue;
                 this[test]();
@@ -2537,6 +2646,11 @@ errMsg = "Test not implimented yet."
         },
         testAll: function () {
             console.log('\x1b[34m%s\x1b[0m', "Vector tests:")
+            for (let method of Object.getOwnPropertyNames(vector.prototype)) {
+                if (this[method] == undefined) {
+                    console.warn(highlight("- No test found for " + method + '!', 'orange'));
+                }
+            }
             for (let test in this) {
                 if (test == "testAll" || test == "quickTest") continue;
                 this[test]();
@@ -2578,6 +2692,11 @@ errMsg = "Test not implimented yet."
         },
         testAll: function () {
             console.log('\x1b[34m%s\x1b[0m', "Vector3D tests:")
+            for (let method of Object.getOwnPropertyNames(vector3D.prototype)) {
+                if (this[method] == undefined) {
+                console.warn(highlight("- No test found for " + method + '!', 'orange'));
+                }
+            }
             for (let test in this) {
                 if (test == "testAll" || test == "quickTest") continue;
                 this[test]();
@@ -3152,6 +3271,17 @@ errMsg = "Test not implimented yet."
         },
         testAll: function () {
             console.log('\x1b[36m%s\x1b[0m', "Function tests:")
+            for (let func of Object.getOwnPropertyNames(module.exports)) {
+                // If its a basic object then skip
+                if (!Object.getOwnPropertyNames(module.exports[func]).includes("prototype")) continue;
+                
+                // Makes sure its not a class
+                if (Object.getOwnPropertyNames(module.exports[func].prototype).length == 1) {
+                    if (this[func] == undefined) {
+                        console.warn(highlight("- No test found for " + func + '!', 'orange'));
+                    }
+                }
+            }
             for (let test in this) {
                 if (test == "testAll" || test == "quickTest") continue;
                 this[test]();
@@ -3254,101 +3384,5 @@ errMsg = "Test not implimented yet."
     }
 }
 
-const colorCodes = {
-    black: "\x1b[30m",
-    red: "\x1b[31m",
-    green: "\x1b[32m",
-    orange: "\x1b[33m",
-    blue: "\x1b[34m",
-    purple: "\x1b[35m",
-    cyan: "\x1b[36m",
-    white: "\x1b[37m"
-}
-/**
- * Highlights a string with a color.
- * @param {String} string - The string to be highlighted
- * @param {String} color - The color to highlight the string with. Can be "black", "red", "green", "orange", "blue", "purple", "cyan", or "white".
- * @returns {String} - The highlighted string.
- */
-function highlight(string, color = "green") {
-    if (!colorCodes[color]) throw new Error(highlight("Invalid color: " + color, "red"));
-    return  colorCodes[color] + string + "\x1b[0m";
-}
-/**
- * Creates a loading bar.
- * @param {Number} percent - Value from 0 to 1.
- * @param {Number} length - The physical length of the loading bar in characters. Does not affect length of the loading bar.
- * @param {String} color color of the loading bar. Can be "black", "red", "green", "orange", "blue", "purple", "cyan", or "white".
- */
-function loadingBar(percent, length = 20, color = "green") {
-    let shades = [" ", characters.leftOneEighthBlock, characters.leftOneQuarterBlock, characters.leftThreeEighthsBlock, characters.leftHalfBlock, characters.leftFiveEighthsBlock, characters.leftThreeQuartersBlock, characters.leftSevenEighthsBlock, characters.square];
-    console.log("        ", characters.cornerDR + new range(0, length + 6).forEach(_ => characters.segmentLR).join('') + characters.cornerDL);
-    console.log("LOADING:", characters.segmentUD, (Math.floor(percent * 100) + "%").padStart(4, " "),  new range(0, length - 1).forEach(i => {
-        let value = 8 * (percent * length - i);
-        if (value < 0) value = 0;
-        if (value >= 8) value = 8;
-        let shade = highlight(shades[Math.floor(value)], color);
-        return shade;
-    }).join(''), characters.segmentUD);
-    console.log("        ", characters.cornerUR + new range(0, length + 6).forEach(_ => characters.segmentLR).join('') + characters.cornerUL);
-}
-const characters = {
-    blackSquare: colorCodes.black + "\u2588\x1b[0m",
-    redSquare: colorCodes.red + "\u2588\x1b[0m",
-    greenSquare: colorCodes.green + "\u2588\x1b[0m",
-    orangeSquare: colorCodes.orange + "\u2588\x1b[0m",
-    blueSquare: colorCodes.blue + "\u2588\x1b[0m",
-    purpleSquare: colorCodes.purple + "\u2588\x1b[0m",
-    cyanSquare: colorCodes.cyan + "\u2588\x1b[0m",
-    whiteSquare: colorCodes.white + "\u2588\x1b[0m",
-    lightShade: "\u2591",
-    mediumShade: "\u2592",
-    darkShade: "\u2593",
-    leftOneEighthBlock: "\u258f",
-    leftOneQuarterBlock: "\u258e",
-    leftThreeEighthsBlock: "\u258d",
-    leftHalfBlock: "\u258c",
-    leftFiveEighthsBlock: "\u258b",
-    leftThreeQuartersBlock: "\u258a",
-    leftSevenEighthsBlock: "\u2589",
-    square: "\u2588",
-    cornerUL: "\u251b",
-    cornerUR: "\u2517",
-    cornerDL: "\u2513",
-    cornerDR: "\u250f",
-    segmentUD: "\u2503",
-    segmentLR: "\u2501",
-    intersectionULR: "\u253b",
-    intersectionDLR: "\u2533",
-    intersectionLUD: "\u252b",
-    intersectionRUD: "\u2523",
-    intersectionLRUD: "\u254b",
-}
-// TODOS:
-// - finish basic tests
-// - Make tests for the array constructor when used with non-rectangular arrays.
-
-module.exports = {
-    range,
-    vector,
-    vector3D,
-    array,
-    jaiden,
-    exists,
-    compareItems,
-    gcd,
-    lcm,
-    primeFactors,
-    coprime,
-    parse,
-    tests,
-    is2DArray,
-    characters,
-    highlight,
-    loadingBar,
-    permutations,
-    unique,
-    abStrings,
-    ASCII,
-    getStringDisplayLength
-}
+// Add tests object to the module.exports object
+module.exports.tests = tests;

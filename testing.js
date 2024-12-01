@@ -3,8 +3,7 @@ const U = require('./utils.js');
 
 
 // U.tests.runPrintTests();
-
-U.tests.runPrintTests();
+// U.tests.runPrintTests();
 U.tests.testAll();
 // // U.tests.testAll();
 // // U.tests.runPrintTests();
