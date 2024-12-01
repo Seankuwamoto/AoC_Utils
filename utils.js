@@ -327,7 +327,7 @@ class array {
     set(x, y, value = 'nothing') {
         let [X, Y] = this.#normalizeInput(x, y);
         if (value == 'nothing') {
-            if (typeof x == "number") throw new Error(highlight("It seems like you've tried to set something to be the keyword \"nothing\".", "red"));
+            if (typeof x == "number") throw new Error(highlight("You must pass in a value to set the array to. If you tried to use the reserved keyword \'nothing\', please use something else instead.", "red"));
             else value = y;
         }
         // Makes sure the coordinates are numbers that are in range.
