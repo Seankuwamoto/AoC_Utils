@@ -8,7 +8,12 @@
 //
 // Add tests for the following:
 // - set having coordinats that are in the form of objects and arrays.
+// 
+//
 // Add functionality to pass an object in for print replacements.
+// Add functionality to pass a coordinate into findFirst that finds the first instance of an element after that coordinate.
+// Make it so that tests automatically detects when a function exists (i.e. is being exported) but doesn't have a test.
+// Remove vectors.
 
 
 /** A one dimensional range class. Contains various methods for working with ranges. */
@@ -500,6 +505,11 @@ class array {
      * @param {function} func - A function to apply to each element in the array. It's called with (e, x, y, array) where e is the element.
      */
     map(func) {
+        if (typeof func == 'undefined') {
+            console.warn(highlight("WARNING: You didn't pass in a function to map. Returning a copy of the array.", 'orange'));
+            return this.clone();
+        }
+        if (typeof func != "function") throw new Error(highlight("You can only map an array with a function. You tried ", "red") + func);
         let tempArray = [];
         for (let i = 0; i < this.array.length; i++) {
             tempArray.push([]);
@@ -661,6 +671,19 @@ class array {
             else return x;
         });
     }
+    /**
+     * Returns the sum of all the elements in the array.
+     * @returns {number} - The sum of all the elements in the array.
+     */
+    sum() {
+        let sum = 0;
+        this.map(x => {
+            if (typeof x != "number") throw new Error(highlight("You tried to add " + x + " to the sum, but it's not a number.", "red"));
+            sum += x;
+        });
+        return sum;
+    }
+
     
 }
 /** Nothing to see here. Just your average jaiden. */ 
@@ -1050,6 +1073,16 @@ function abStrings(n, a, b, c) {
  */
 function getStringDisplayLength(str) {
     return str.replace(/\x1b\[[0-9]*m/g, "").length;
+}
+/**
+ * Returns the ASCII value of a character.
+ * @param {string} char - The character to get the ASCII value of.
+ * @returns {number} - The ASCII value of the character.
+ */
+function ASCII(char) {
+    if (typeof char != "string") throw new Error(highlight("You can only get the ASCII value of a string.", "red"));
+    if (char.length != 1) throw new Error(highlight("You can only get the ASCII value of a single character.", "red"));
+    return char.charCodeAt(0);
 }
 
 
@@ -2019,6 +2052,28 @@ errMsg = "Test not implimented yet."
             if (print) printStatus(name, isWorking, errMsg);
             return isWorking;
         },
+        sum: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "sum";
+
+            // TESTS BEGIN HERE
+            if (!tests.arrayTests.constructor(false)) {
+                errMsg = "Unable to construct array.";
+                isWorking = undefined;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
+
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+            
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
         // This one also requires visual confirmation by the user.
         printSpecial: function (print = true) {
             let isWorking = true;
@@ -2895,6 +2950,150 @@ errMsg = "Test not implimented yet."
             if (print) printStatus(name, isWorking, errMsg);
             return isWorking;
         },
+        gcd: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "gcd";
+
+            // TESTS BEGIN HERE
+            
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        lcm: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "lcm";
+
+            // TESTS BEGIN HERE
+            
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        primeFactors: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "primeFactors";
+
+            // TESTS BEGIN HERE
+            
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        coprime: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "coprime";
+
+            // TESTS BEGIN HERE
+            
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        characters: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "characters";
+
+            // TESTS BEGIN HERE
+            
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        unique: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "unique";
+
+            // TESTS BEGIN HERE
+            
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        abStrings: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "abStrings";
+
+            // TESTS BEGIN HERE
+            
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        ASCII: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "ASCII";
+
+            // TESTS BEGIN HERE
+            
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        getStringDisplayLength: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "getStringDisplayLength";
+
+            // TESTS BEGIN HERE
+            
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
         testAll: function () {
             console.log('\x1b[36m%s\x1b[0m', "Function tests:")
             for (let test in this) {
@@ -3094,5 +3293,6 @@ module.exports = {
     permutations,
     unique,
     abStrings,
+    ASCII,
     getStringDisplayLength
 }
