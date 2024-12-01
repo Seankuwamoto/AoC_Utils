@@ -8,6 +8,7 @@
 //
 // Add tests for the following:
 // - set having coordinats that are in the form of objects and arrays.
+// Change.
 
 
 /** A one dimensional range class. Contains various methods for working with ranges. */
