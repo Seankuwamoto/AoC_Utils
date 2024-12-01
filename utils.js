@@ -187,9 +187,13 @@ class vector3D extends vector {
 class array {
     /**
      * Create an array. Can be called in 3 ways:
+     * 
      * array(range1, range2, fillItem) - Creates an array with the given ranges and fills it with the fillItem.
+     * 
      * array(2DArray) - Creates an array with the given 2D array.
+     * 
      * array(2DArray, fillItem) - Creates an array with the given 2D array and overrides it with the fillItem.
+     * 
      */
     constructor(range1, range2 = "undefined", fillItem = "undefined") {
 
@@ -220,11 +224,11 @@ class array {
             const MAX_LENGTH = Math.max(...range1.map(x => x.length));
             this.range2 = new range(0,MAX_LENGTH-1);
     
-            // Fills empty spaces with spaces.
+            // Fills empty spaces with zeroes.
             for (let i = 0; i < range1.length; i++) {
                 for (let j = 0; j < MAX_LENGTH; j++) {
                     if (!exists(range1[i][j])) {
-                        range1[i].push(" ")
+                        range1[i].push(0)
                     }
                 }
             }
@@ -441,7 +445,7 @@ class array {
     }
     // Applies a function to every item in the array.
     /**
-     * DEPRECATED. Use map instead.
+     * @deprecated Use map instead.
      * Applies a callback function to every item in the array.
      * @param {function} func - A function to apply to each element in the array. It's called with (e) where e is the element.
      * Transformations are applied in place and override the original array. They happen simultaneously.
@@ -458,7 +462,7 @@ class array {
         return;
     }
     /**
-     * DEPRECATED. Use map instead.
+     * @deprecated. Use map instead.
      * Applies a callback function to every item in the array.
      * @param {function} func - A function to apply to each element in the array. It's called with (array, x, y).
      * Transformations are applied in place and override the original array. They happen simultaneously.
@@ -473,7 +477,6 @@ class array {
         }
         this.array = tempArray;
     }
-
     /**
      * Maps the array to a new array and returns a copy.
      * @param {function} func - A function to apply to each element in the array. It's called with (e, x, y, array) where e is the element.
@@ -582,6 +585,35 @@ class array {
 
 
     }
+    /**
+     * Finds the first instance of a specific element in the array
+     * @returns {Object} the x and y coordinates of the element, given by {x: x-coord, y: y-coord}.
+     */
+    find(element) {
+        for (let i = 0; i < this.array.length; i++) {
+            for (let j = 0; j < this.array.length; j++) {
+                if (compareItems(element, this.array[i][j])) return {x: this.range1.at(i), y: this.range2.at(j)};
+            }
+        }
+        console.warn(highlight("WARNING: element could not be found using array.find(). Returning undefined.", 'orange'));
+        return;
+    }
+    /** 
+     * Finds all instances of a specific element in the array
+     * @returns {Array} An array of x and y coordinates in the form of objects. (e.g. [{x: 1, y: 1}, {x: 2, y: 2}])
+     */
+    findAll(element) {
+        let returnArray = [];
+        for (let i = 0; i < this.array.length; i++) {
+            for (let j = 0; j < this.array.length; j++) {
+                if (compareItems(element, this.array[i][j])) returnArray.push({x: this.range1.at(i), y: this.range2.at(j)});
+            }
+        }
+        if (returnArray == []) {
+            console.warn(highlight("WARNING: element could not be found using array.findAll(). Returning empty list.", 'orange'));
+        }
+        return returnArray;
+    }
 }
 /** Nothing to see here. Just your average jaiden. */ 
 class jaiden {
@@ -634,6 +666,9 @@ function exists(value) {
  * @returns {boolean}
  */
 function compareItems(a,b) {
+    if (a === undefined && b === undefined) {
+        console.warn(highlight("WARNING: compareItems received two undefineds. "));
+    }
     if (typeof a != typeof b) return false;
     if (Array.isArray(a) && Array.isArray(b)) {
         if (a.length != b.length) return false;
@@ -938,7 +973,7 @@ function permutations(array) {
     if (typeof array == "string") perms = perms.map(x => x.join(""));
     return perms;
 }
-/** returns all the ways to have a length n string made only of characters a and b
+/** returns all the ways to make a length n string from a and b.
 * @param {number} n - The length of the string.
 * @param {string} a - The first character.
 * @param {string} b - The second character.
@@ -960,6 +995,16 @@ function abStrings(n, a, b, c) {
     return strings;
 
 }
+/**
+ * Gets the display length of a string. (i.e. how many characters wide it is when you console.log it.)
+ * @param {string} str - the string you want to know the length of
+ * @returns {Number} the length of the string
+ */
+function getStringDisplayLength(str) {
+    return str.replace(/\x1b\[[0-9]*m/g, "").length;
+}
+
+
 const tests = {
     arrayTests: {
         constructor: function (print = true) {
@@ -2875,5 +2920,6 @@ module.exports = {
     loadingBar,
     permutations,
     unique,
-    abStrings
+    abStrings,
+    getStringDisplayLength
 }
