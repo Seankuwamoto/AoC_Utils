@@ -8,7 +8,7 @@
 //
 // Add tests for the following:
 // - set having coordinats that are in the form of objects and arrays.
-// Change.
+// Add functionality to pass an object in for print replacements.
 
 
 /** A one dimensional range class. Contains various methods for working with ranges. */
@@ -351,10 +351,28 @@ class array {
      * @param {Array} replacements - Replacements can take in functions or values. For example, replacements = [[(x) => x % 2 == 0, " "], [1, "#"]] will replace all even numbers with spaces and all 1s with #s. Replacements do not affect the original array, and only display in the print function.
      */
     print(coords = false, replacements = []) {
+        if (replacements != [] && !is2DArray(replacements) && typeof replacements != "function") {
+            throw new Error(highlight("Replacements must be a 2D array. You passed in [" + replacements + "]\n", "red") + 
+                "E.g.\n" +
+                highlight("\t[[\"0\", \".\"], [\"1\", \"#\"]]\n", 'green') +
+                "to replace 0s with periods and 1s with hashtags. You could also use functions to do the same thing, like this:" +
+                highlight("\n\t[(x) => x==\"0\", \".\"], [(x) => x==\"1\", \"#\"]]\n", 'green') + 
+                "or like this " +
+                highlight("\n\t(x) => {if (x == \"0\") return \".\"; if (x == \"1\" return \"#\"; else return x;}\n", 'green')
+                );
+        }
+        if (is2DArray(replacements)) {
+            for (let replacement of replacements) {
+                if (replacement.length != 2) {
+                    throw new Error(highlight("Each replacement must be an array with 2 elements. You passed in " + replacement + "\n", "red"));
+                }
+            }
+        }
         // Gets a line string from a line of the array. Uses replacements.
         function getLineString(line) {
             let linestring = "";
             for (let i = 0; i < line.length; i++) {
+
                 let hasBeenReplaced = false;
                 if (typeof replacements == "function") {
                     linestring += replacements(line[i]);
@@ -1468,6 +1486,12 @@ errMsg = "Test not implimented yet."
                 if (print) printStatus(name, isWorking, errMsg);
                 return isWorking;
             }
+            if(!tests.functionTests.is2DArray(false)) {
+                errMsg = "Unable to check if an array is 2D.";
+                isWorking = undefined;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
             try {
                 console.log("Testing \x1b[34mprint\x1b[35m(\x1b[33mtrue\x1b[35m)\x1b[0m. You should see an array from 0 to 9 on the top and from 0 to -9 on the left. The bottom right corner should be 1, the one to the left of it should be 2, and the rest should be 0.");
                 let myArr = new array(-10, 10);
@@ -1524,6 +1548,16 @@ errMsg = "Test not implimented yet."
                 isWorking = false;
                 if (print) printStatus(name, isWorking, errMsg);
                 return isWorking;
+            }
+            // Makes sure the print function properly throws an error when passed in invalid replacements.
+            try {
+                myArr.print(true, [[1, 2], 2, 3]);
+                errMsg = "print did not throw an error when passed in an array of invalid replacements.";
+                isWorking = false;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
+            catch {
             }
 
             // TESTS END HERE
@@ -1895,17 +1929,17 @@ errMsg = "Test not implimented yet."
         testAll: function () {
             console.log('\x1b[34m%s\x1b[0m', "Array tests:")
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary" || test == "print" || test == "printSpecial") continue;
+                if (test == "testAll" || test == "quickTest" || test == "print" || test == "printSpecial") continue;
                 this[test]();
             }
-            let value = this.printSummary();
+            let value = this.quickTest();
             console.log();
             return value;
         },
-        printSummary: function (print = true) {
+        quickTest: function (print = true) {
             let summary = "\x1b[32mLooks good!\x1b[0m";
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary" || test == "print" || test == "printSpecial") continue;
+                if (test == "testAll" || test == "quickTest" || test == "print" || test == "printSpecial") continue;
                 let testPassed = this[test](false);
                 if (testPassed === false) summary = "\x1b[31mSome tests failed.\x1b[0m";
                 if (summary == "\x1b[32mLooks good!\x1b[0m" && testPassed === undefined) summary = "\x1b[32mNo tests failed\x1b[0m, \x1b[33mbut some were unable to be run.\x1b[0m";
@@ -2212,17 +2246,17 @@ errMsg = "Test not implimented yet."
         testAll: function () {
             console.log('\x1b[34m%s\x1b[0m', "Range tests:")
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary") continue;
+                if (test == "testAll" || test == "quickTest") continue;
                 this[test]();
             }
-            let value = this.printSummary();
+            let value = this.quickTest();
             console.log();
             return value;
         },
-        printSummary: function (print = true) {
+        quickTest: function (print = true) {
             let summary = "\x1b[32mLooks good!\x1b[0m";
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary") continue;
+                if (test == "testAll" || test == "quickTest") continue;
                 let testPassed = this[test](false);
                 if (testPassed === false) summary = "\x1b[31mSome tests failed.\x1b[0m";
                 if (summary == "\x1b[32mLooks good!\x1b[0m" && testPassed === undefined) summary = "\x1b[32mNo tests failed\x1b[0m, \x1b[33mbut some were unable to be run.\x1b[0m";
@@ -2253,17 +2287,17 @@ errMsg = "Test not implimented yet."
         testAll: function () {
             console.log('\x1b[34m%s\x1b[0m', "Vector tests:")
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary") continue;
+                if (test == "testAll" || test == "quickTest") continue;
                 this[test]();
             }
-            let value = this.printSummary();
+            let value = this.quickTest();
             console.log();
             return value;
         }, 
-        printSummary: function (print = true) {
+        quickTest: function (print = true) {
             let summary = "\x1b[32mLooks good!\x1b[0m";
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary") continue;
+                if (test == "testAll" || test == "quickTest") continue;
                 let testPassed = this[test](false);
                 if (testPassed === false) summary = "\x1b[31mSome tests failed.\x1b[0m";
                 if (summary == "\x1b[32mLooks good!\x1b[0m" && testPassed === undefined) summary = "\x1b[32mNo tests failed\x1b[0m, \x1b[33mbut some were unable to be run.\x1b[0m";
@@ -2294,17 +2328,17 @@ errMsg = "Test not implimented yet."
         testAll: function () {
             console.log('\x1b[34m%s\x1b[0m', "Vector3D tests:")
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary") continue;
+                if (test == "testAll" || test == "quickTest") continue;
                 this[test]();
             }
-            let value = this.printSummary();
+            let value = this.quickTest();
             console.log();
             return value;
         },
-        printSummary: function (print = true) {
+        quickTest: function (print = true) {
             let summary = "\x1b[32mLooks good!\x1b[0m";
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary") continue;
+                if (test == "testAll" || test == "quickTest") continue;
                 let testPassed = this[test](false);
                 if (testPassed === false) summary = "\x1b[31mSome tests failed.\x1b[0m";
                 if (summary == "\x1b[32mLooks good!\x1b[0m" && testPassed === undefined) summary = "\x1b[32mNo tests failed\x1b[0m, \x1b[33mbut some were unable to be run.\x1b[0m";
@@ -2322,7 +2356,6 @@ errMsg = "Test not implimented yet."
             const name = "is2DArray";
 
             // TESTS BEGIN HERE
-            
             // Makes sure numbers, floats, strings, booleans, etc. are not arrays
             if (is2DArray(0)) {
                 isWorking = false;
@@ -2725,17 +2758,17 @@ errMsg = "Test not implimented yet."
         testAll: function () {
             console.log('\x1b[36m%s\x1b[0m', "Function tests:")
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary") continue;
+                if (test == "testAll" || test == "quickTest") continue;
                 this[test]();
             }
-            let value = this.printSummary();
+            let value = this.quickTest();
             console.log();
             return value;
         },
-        printSummary: function (print = true) {
+        quickTest: function (print = true) {
             let summary = "\x1b[32mLooks good!\x1b[0m";
             for (let test in this) {
-                if (test == "testAll" || test == "printSummary") continue;
+                if (test == "testAll" || test == "quickTest") continue;
                 let testPassed = this[test](false);
                 if (testPassed === false) summary = "\x1b[31mSome tests failed.\x1b[0m";
                 if (summary == "\x1b[32mLooks good!\x1b[0m" && testPassed === undefined) summary = "\x1b[32mNo tests failed\x1b[0m, \x1b[33mbut some were unable to be run.\x1b[0m";
@@ -2749,28 +2782,28 @@ errMsg = "Test not implimented yet."
     testAll: function () {
         console.log('\x1b[35m%s\x1b[0m', "\nTesting all utilities...\n")
         for (let test in this) {
-            if (test == "testAll" || test == "printSummary" || test == "summarizeAll" || test == "runPrintTests") continue;
+            if (test == "testAll" || test == "quickTest" || test == "summarizeAll" || test == "runPrintTests") continue;
             this[test].testAll();
         }
-        this.printSummary();
+        this.quickTest();
         console.log();
     },
     summarizeAll: function () {
         console.log('\x1b[35m%s\x1b[0m', "Summarizing all utilities...\n")
         let summary = "\x1b[32mLooks good!\x1b[0m";
         for (let test in this) {
-            if (test == "testAll" || test == "printSummary" || test == "summarizeAll"|| test == "runPrintTests") continue;
-            let testPassed = this[test].printSummary();
+            if (test == "testAll" || test == "quickTest" || test == "summarizeAll"|| test == "runPrintTests") continue;
+            let testPassed = this[test].quickTest();
             if (testPassed === false) summary = "\x1b[31mSome tests failed.\x1b[0m";
             if (summary == "\x1b[32mLooks good!\x1b[0m" && testPassed === undefined) summary = "\x1b[32mNo tests failed\x1b[0m, \x1b[33mbut some were unable to be run.\x1b[0m";
         }
         console.log("\n\x1b[35mUtilities summary: \x1b[0m" + summary + "\n");
     },
-    printSummary: function () {
+    quickTest: function () {
         let summary = "\x1b[32mLooks good!\x1b[0m";
         for (let test in this) {
-            if (test == "testAll" || test == "printSummary" || test == "summarizeAll"|| test == "runPrintTests") continue;
-            let testPassed = this[test].printSummary(false);
+            if (test == "testAll" || test == "quickTest" || test == "summarizeAll"|| test == "runPrintTests") continue;
+            let testPassed = this[test].quickTest(false);
             if (testPassed === false) summary = "\x1b[31mSome tests failed.\x1b[0m";
             if (summary == "\x1b[32mLooks good!\x1b[0m" && testPassed === undefined) summary = "\x1b[32mNo tests failed\x1b[0m, \x1b[33mbut some were unable to be run.\x1b[0m";
         }
