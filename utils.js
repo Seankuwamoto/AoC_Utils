@@ -683,6 +683,18 @@ class array {
         });
         return sum;
     }
+    /** returns the width of the array. This is not zero indexed, so an array where each row has 1 element has width 1, where each row has two elements has width 2, and so on.
+     * @returns {number} - The width of the array.
+     */
+    get width() {
+        return this.range2.length + 1;
+    }
+    /** returns the height of the array. This is not zero indexed, so an array with 1 row has height 1, an array with 2 rows has height 2, and so on.
+     * @returns {number} - The height of the array.
+     */
+    get height() {
+        return this.range1.length + 1;
+    }
 
     
 }
@@ -2056,6 +2068,50 @@ errMsg = "Test not implimented yet."
             let isWorking = true;
             let errMsg = "No error message found.";
             const name = "sum";
+
+            // TESTS BEGIN HERE
+            if (!tests.arrayTests.constructor(false)) {
+                errMsg = "Unable to construct array.";
+                isWorking = undefined;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
+
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+            
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        width: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "width";
+
+            // TESTS BEGIN HERE
+            if (!tests.arrayTests.constructor(false)) {
+                errMsg = "Unable to construct array.";
+                isWorking = undefined;
+                if (print) printStatus(name, isWorking, errMsg);
+                return isWorking;
+            }
+
+            //TODO
+            isWorking = undefined;
+            errMsg = "Test not implimented yet."
+
+            // TESTS END HERE
+            
+            if (print) printStatus(name, isWorking, errMsg);
+            return isWorking;
+        },
+        height: function (print = true) {
+            let isWorking = true;
+            let errMsg = "No error message found.";
+            const name = "height";
 
             // TESTS BEGIN HERE
             if (!tests.arrayTests.constructor(false)) {
