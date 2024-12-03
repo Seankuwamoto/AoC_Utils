@@ -4,7 +4,7 @@
 //
 // - Add a 'left align' option to printSpecial so that the extra space is added on the right instead of the left.
 //
-// - Make sure the highlights array is properly transformed in flipX, flipY, and invert.
+// - Make sure the highlights array is properly transformed in flipX, flipY, and transpose.
 //
 // Add tests for the following:
 // - set having coordinats that are in the form of objects and arrays.
@@ -231,10 +231,15 @@ class array {
             const MAX_LENGTH = Math.max(...range1.map(x => x.length));
             this.range2 = new range(0,MAX_LENGTH-1);
     
+            let hasWarned = false;
             // Fills empty spaces with zeroes.
             for (let i = 0; i < range1.length; i++) {
                 for (let j = 0; j < MAX_LENGTH; j++) {
                     if (!exists(range1[i][j])) {
+                        if (!hasWarned) {
+                            console.warn(highlight("WARNING: You passed in a jagged array. Filling empty spaces with zeroes.", "orange"));
+                            hasWarned = true;
+                        }
                         range1[i].push(0)
                     }
                 }
@@ -452,7 +457,7 @@ class array {
      * Swaps the x and y values of all the items in the array, or "transposes" it.
      * @returns {array} - Returns a new array with the x and y values swapped.
      */
-    invert() {
+    transpose() {
         let newArray = new array(this.range2, this.range1);
         for (let i = 0; i < this.array.length; i ++) {
             for (let j = 0; j < this.array[i].length; j++) {
@@ -460,6 +465,14 @@ class array {
             }
         }
         return newArray;
+    }
+    /**
+     * @deprecated Use transpose instead.
+     * Swaps the x and y values of all the items in the array, or "transposes" it.
+     * @returns {array} - Returns a new array with the x and y values swapped.
+     */
+    invert() {
+        return this.transpose();
     }
     /**
      * Converts the array into a normal javascript array.
@@ -505,6 +518,7 @@ class array {
     /**
      * Maps the array to a new array and returns a copy.
      * @param {function} func - A function to apply to each element in the array. It's called with (e, x, y, array) where e is the element.
+     * @returns {array} - Returns a new array with the function applied to each element.
      */
     map(func) {
         if (typeof func == 'undefined') {
@@ -523,6 +537,24 @@ class array {
         tempArray.range1 = this.range1;
         tempArray.range2 = this.range2;
         return tempArray;
+    }
+    /**
+     * Returns true if the callback function is true for all elements in the array, false otherwise.
+     * @param {function} func - A function to apply to each element in the array. It's called with (e, x, y, array) where e is the element.
+     * @returns {boolean}
+     */
+    every(func) {
+        if (typeof func == 'undefined') {
+            console.warn(highlight("WARNING: You didn't pass in a function to every. Returning true.", 'orange'));
+            return true;
+        }
+        if (typeof func != "function") throw new Error(highlight("You can only call every on an array with a function. You tried ", "red") + func);
+        
+        let isEvery = true;
+        this.map((e,x, y, array) => {
+            if (!func(e, x, y, array)) isEvery = false;
+        });
+        return isEvery;
     }
     /**
      * Gets the neighbors of a certain position in the array in a square with radius of size. Passing in no argument gets non-diagonal size 1 neighbors.
@@ -1823,10 +1855,10 @@ errMsg = "Test not implimented yet."
             if (print) printStatus(name, isWorking, errMsg);
             return isWorking;
         },
-        invert: function (print = true) {
+        transpose: function (print = true) {
             let isWorking = true;
             let errMsg = "No error message found.";
-            const name = "invert";
+            const name = "transpose";
 
             // TESTS BEGIN HERE
             if (!tests.arrayTests.constructor(false)) {
