@@ -15,9 +15,6 @@
 // Make it so that tests automatically detects when a function exists (i.e. is being exported) but doesn't have a test.
 // Remove vectors.
 
-const { type } = require("express/lib/response");
-
-
 /** A one dimensional range class. Contains various methods for working with ranges. */
 class range {
     /**
