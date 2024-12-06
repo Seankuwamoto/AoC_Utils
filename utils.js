@@ -125,8 +125,26 @@ class range {
 /** A two dimensional vector class. Contains various methods for vector math. */
 class vector {
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
+        let [X, Y] = this.#normalizeInput(x, y);
+        this.x = X;
+        this.y = Y;
+    }
+    #normalizeInput(x, y = undefined) {
+        if (!exists(x)) throw new Error(highlight("You must pass in at least one argument.", "red"));
+         // Single input shenanigans.
+         if (!exists(y) || typeof x == "object" || typeof x == "array") {
+            // If the input is an object of type {x: number, y: number}, use that.
+            if (exists(x.x) && exists(x.y) && Object.keys(x).length == 2) return [x.x, x.y];
+            // If the input is an array of type [number, number], use that.
+            else if (exists(x[0]) && exists(x[1]) && x.length == 2) return x;
+            // You fucked up if you got here.
+            else {
+                throw new Error(highlight("If you try to call a function with only one paramater, you must use an object in the form of {x: number, y: number} or an array in the form of [number, number]. You tried to call it with ", "red") + x);
+            }
+        }
+        if (typeof x != "number" || typeof y != "number") throw new Error(highlight("You can only index an array with numbers. (You tried to index with x:" + x + ", y:" + y + "", "red"));
+        // Return the value at the given coordinates.
+        return [x, y];
     }
     // Returns the length of the vector.
     length() {
@@ -148,11 +166,31 @@ class vector {
     multiply(scalar) {
         return new vector(this.x * scalar, this.y * scalar);
     }
+    // Scale by the scalar passed in.
+    scale(scalar) {
+        return this.multiply(scalar);
+    }
     // Rotates the vector by the angle passed in. (radians)
     rotate(angle) {
         let x = this.x * Math.cos(angle) - this.y * Math.sin(angle);
         let y = this.x * Math.sin(angle) + this.y * Math.cos(angle);
         return new vector(x, y);
+    }
+    // Turns in the specified direction. (left 90, right 270, around 180)
+    turn(direction) {
+        if (direction.toUpperCase() == "LEFT") return new vector(-this.y, this.x);
+        else if (direction.toUpperCase() == "RIGHT") return new vector(this.y, -this.x);
+        else if (direction.toUpperCase() == "AROUND") return new vector(-this.x, -this.y);
+        else throw new Error(highlight("You can only turn a vector left, right, or around.", "red"));
+    }
+    // Returns true if the vector is equal to the vector passed in.
+    equals(vec) {
+        if (this.x == vec.x && this.y == vec.y) return true;
+        else return false;
+    }
+    // Returns the dot product of the vector and the vector passed in.
+    dot(vec) {
+        return this.x * vec.x + this.y * vec.y;
     }
     // Prints the vector in the form (x, y).
     print() {
@@ -229,6 +267,7 @@ class array {
             this.range2 = new range(0,MAX_LENGTH-1);
     
             let hasWarned = false;
+
             // Fills empty spaces with zeroes.
             for (let i = 0; i < range1.length; i++) {
                 for (let j = 0; j < MAX_LENGTH; j++) {
@@ -245,6 +284,7 @@ class array {
             if (range2 != "undefined") {
                 if (fillItem != "undefined") throw new Error(highlight("If you pass an array as the first argument, you can only pass one other argument (fill item).", "red"));
                 this.forEach(_ => range2);
+                return;
             }
 
             return;
@@ -530,10 +570,9 @@ class array {
                 tempArray[i].push(func(this.get(this.range1.at(i), this.range2.at(j)), this.range1.at(i), this.range2.at(j), this));
             }
         }
-        tempArray = new array(tempArray);
-        tempArray.range1 = this.range1;
-        tempArray.range2 = this.range2;
-        return tempArray;
+        let returnArray = new array(this.range1, this.range2);
+        returnArray.array = tempArray;
+        return returnArray;
     }
     /**
      * Returns true if the callback function is true for all elements in the array, false otherwise.
@@ -1197,6 +1236,23 @@ const characters = {
     intersectionRUD: "\u2523",
     intersectionLRUD: "\u254b",
 }
+
+const directions = {
+    UP: new vector(-1, 0),
+    DOWN: new vector(1, 0),
+    LEFT: new vector(0, -1),
+    RIGHT: new vector(0, 1),
+    UPLEFT: new vector(-1, -1),
+    UPRIGHT: new vector(-1, 1),
+    DOWNLEFT: new vector(1, -1),
+    DOWNRIGHT: new vector(1, 1),
+    // Adjacent vectors in a grid, in the order of up, right, down, left.
+    ADJACENT: [new vector(-1, 0), new vector(1, 0), new vector(0, -1), new vector(0, 1)],
+    // Diagonal vectors in a grid, in the order of up-left, up-right, down-left, down-right.
+    DIAGONAL: [new vector(-1, -1), new vector(-1, 1), new vector(1, -1), new vector(1, 1)],
+    // All 8 directions in a grid, in the order of up, up-right, right, down-right, down, down-left, left, up-left.
+    ALL: [new vector(-1, 0), new vector(-1, 1), new vector(0, 1), new vector(1, 1), new vector(1, 0), new vector(1, -1), new vector(0, -1), new vector(-1, -1)],
+}
 // TODOS:
 // - finish basic tests
 // - Make tests for the array constructor when used with non-rectangular arrays.
@@ -1215,14 +1271,15 @@ module.exports = {
     coprime,
     parse,
     is2DArray,
-    characters,
     highlight,
     loadingBar,
     permutations,
     unique,
     abStrings,
     ASCII,
-    getStringDisplayLength
+    getStringDisplayLength,
+    characters,
+    directions
 }
 
 
