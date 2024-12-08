@@ -12,8 +12,6 @@
 //
 // Add functionality to pass an object in for print replacements.
 // Add functionality to pass a coordinate into findFirst that finds the first instance of an element after that coordinate.
-// Make it so that tests automatically detects when a function exists (i.e. is being exported) but doesn't have a test.
-// Remove vectors.
 
 /** A one dimensional range class. Contains various methods for working with ranges. */
 class range {
@@ -166,6 +164,10 @@ class vector {
     multiply(scalar) {
         return new vector(this.x * scalar, this.y * scalar);
     }
+    // Divides the vector by the scalar passed in.
+    divide(scalar) {
+        return new vector(this.x / scalar, this.y / scalar);
+    }
     // Scale by the scalar passed in.
     scale(scalar) {
         return this.multiply(scalar);
@@ -191,6 +193,10 @@ class vector {
     // Returns the dot product of the vector and the vector passed in.
     dot(vec) {
         return this.x * vec.x + this.y * vec.y;
+    }
+    // Returns double the vector
+    double() {
+        return this.multiply(2);
     }
     // Prints the vector in the form (x, y).
     print() {
@@ -598,6 +604,7 @@ class array {
      * @param {number} x - x coordinate of the array. Can also be an object in the form of {x: number, y: number} or [number, number].
      * @param {number} y - y coordinate of the array. If x is an object or array, this is ignored.
      * @param {number} size - The radius of the square to get neighbors from. Defaults to 0 (non-diagonal 1-neighbors).
+     * @returns {Array} - An array of objects in the form of {x: x-coord, y: y-coord} of the neighbors.
      */
     neighbors(x, y, size = 0) {
         let [X, Y] = this.#normalizeInput(x, y);
