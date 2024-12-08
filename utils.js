@@ -760,6 +760,14 @@ class array {
         });
         return sum;
     }
+    /**
+     * Creates a new array filled with the element passed in.
+     * @param {any} element - The element to fill the array with.
+     * @returns {array} - Returns a new array filled with the element.
+     */
+    fill(element) {
+        return this.map(_ => element);
+    }
     /** returns the width of the array. This is not zero indexed, so an array where each row has 1 element has width 1, where each row has two elements has width 2, and so on.
      * @returns {number} - The width of the array.
      */
@@ -772,8 +780,6 @@ class array {
     get height() {
         return this.range1.length + 1;
     }
-
-    
 }
 /** Nothing to see here. Just your average jaiden. */ 
 class jaiden {
