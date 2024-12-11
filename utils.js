@@ -931,9 +931,8 @@ function unique(arr, resourceIntensive = true) {
                 break;
             }
         }
-        if (!found) uniqueArray.push(item);
+        if (!found) uniqueArray.push(item); s
     }
-    return uniqueArray;
 }
 /**
  * Prints the status of a test.
@@ -1223,6 +1222,21 @@ function loadingBar(percent, length = 20, color = "green") {
     }).join(''), characters.segmentUD);
     console.log("        ", characters.cornerUR + new range(0, length + 6).forEach(_ => characters.segmentLR).join('') + characters.cornerUL);
 }
+/**
+ * Converts an arrray into a dictionary whose keys are the elements of the array and values are the number of times they appear.
+ * @param {Array} arr - The array to convert.
+ * @returns {Object} - The dictionary.
+ */
+function toCounts(arr) {
+    let counts = {};
+    for (let item of arr) {
+        let key = JSON.stringify(item);
+        if (!counts[key]) counts[key] = 0;
+        counts[key]++;
+    }
+    return counts;
+}
+
 const colorCodes = {
     black: "\x1b[30m",
     red: "\x1b[31m",
@@ -1307,6 +1321,7 @@ module.exports = {
     abStrings,
     ASCII,
     getStringDisplayLength,
+    toCounts,
     characters,
     directions
 }
