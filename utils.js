@@ -913,11 +913,27 @@ function coprime(a, b) {
 /**
  * Returns the unique elements of an array in the same order that each one first appeared.
  * @param {Array} arr - The array to find the unique elements of. 
+ * @param {boolean} resourceIntensive - Whether or not to use a resource intensive method to find the unique elements. This method is slower but gets true uniqueness. Much faster if false, but will not filter out objects with the same keys and values.
  * @returns 
  */
-function unique(arr) {
+function unique(arr, resourceIntensive = true) {
     if (!Array.isArray(arr)) throw new Error(highlight("You can only find the unique elements of an array.", "red"));
-    return arr.map(x => JSON.stringify(x)).map((x, i, arr) => arr.indexOf(x) == i ? JSON.parse(x) : undefined).filter(x => x);
+
+    if (!resourceIntensive) return [...new Set(arr)];
+
+    // Uses compareItems to compare the elements of the array.
+    let uniqueArray = [];
+    for (let item of arr) {
+        let found = false;
+        for (let uniqueItem of uniqueArray) {
+            if (compareItems(item, uniqueItem)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) uniqueArray.push(item);
+    }
+    return uniqueArray;
 }
 /**
  * Prints the status of a test.
