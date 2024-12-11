@@ -917,7 +917,7 @@ function coprime(a, b) {
  */
 function unique(arr) {
     if (!Array.isArray(arr)) throw new Error(highlight("You can only find the unique elements of an array.", "red"));
-    return [...new Set(arr)];
+    return arr.map(x => JSON.stringify(x)).map((x, i, arr) => arr.indexOf(x) == i ? JSON.parse(x) : undefined).filter(x => x);
 }
 /**
  * Prints the status of a test.
