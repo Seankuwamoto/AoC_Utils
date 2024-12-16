@@ -581,6 +581,13 @@ class array {
         return returnArray;
     }
     /**
+     * Returns the coordinates of every element in the array as an array of vectors.
+     * @returns {Array} - An array of vectors in the form of {x: x-coord, y: y-coord}.
+     */
+    get coords() {
+        return this.map((_, x, y) => new vector(x, y));
+    }
+    /**
      * Returns true if the callback function is true for all elements in the array, false otherwise.
      * @param {function} func - A function to apply to each element in the array. It's called with (e, x, y, array) where e is the element.
      * @returns {boolean}
@@ -696,7 +703,7 @@ class array {
      */
     find(element) {
         for (let i = 0; i < this.array.length; i++) {
-            for (let j = 0; j < this.array.length; j++) {
+            for (let j = 0; j < this.array[0].length; j++) {
                 if (compareItems(element, this.array[i][j])) return {x: this.range1.at(i), y: this.range2.at(j)};
             }
         }
@@ -710,7 +717,7 @@ class array {
     findAll(element) {
         let returnArray = [];
         for (let i = 0; i < this.array.length; i++) {
-            for (let j = 0; j < this.array.length; j++) {
+            for (let j = 0; j < this.array[0].length; j++) {
                 if (compareItems(element, this.array[i][j])) returnArray.push({x: this.range1.at(i), y: this.range2.at(j)});
             }
         }
@@ -755,7 +762,9 @@ class array {
     sum() {
         let sum = 0;
         this.map(x => {
-            if (typeof x != "number") throw new Error(highlight("You tried to add " + x + " to the sum, but it's not a number.", "red"));
+            if (x == undefined || x == null || x instanceof Array || x instanceof Object) {
+                throw new Error(highlight("You tried to add", "red") + x + highlight("to the sum of an array. You can only add numbers.", "red"));
+            }
             sum += x;
         });
         return sum;
@@ -767,6 +776,19 @@ class array {
      */
     fill(element) {
         return this.map(_ => element);
+    }
+    /**
+     * Increment the value at the given coordinates by the given amount.
+     * @param {number} x - x coordinate of the array. Alternatively can be an object in the form of {x: number, y: number} or an array in the form of [number, number].
+     * @param {number} y - y coordinate of the array. If x is an object or array, this is the amount to increment by.
+     * @param {number} amount - The amount to increment by. Defaults to 1.
+     */
+    increment(x, y, amount = 1) {
+        let [X, Y] = this.#normalizeInput(x, y);
+        if ((typeof x == "object" || typeof x == "array") && y != undefined) amount = y;
+        if (typeof this.get(X, Y) != "number") throw new Error(highlight("You can only increment numbers in an array. You tried to increment ", "red") + this.get(X, Y));
+        if (typeof amount != "number") throw new Error(highlight("You can only increment by a number. You tried to increment by ", "red") + amount);
+        this.set(X, Y, this.get(X, Y) + amount);
     }
     /** returns the width of the array. This is not zero indexed, so an array where each row has 1 element has width 1, where each row has two elements has width 2, and so on.
      * @returns {number} - The width of the array.
@@ -780,7 +802,228 @@ class array {
     get height() {
         return this.range1.length + 1;
     }
+    /**
+     * Floods the array beginning at the given coordinates.
+     * @param {number} x - x coordinate of the array. Alternatively can be an object in the form of {x: number, y: number} or an array in the form of [number, number].
+     * @param {number} y - y coordinate of the array. If x is an object or array, this is ignored.
+     * @param {function} func - A function to determine if a cell should be flooded. It's called with (e, n, x, y, array) where e is the element, n is it's neighbor, and x and y are the coordinates of e, and array is the array.
+     * @param {boolean} diagonal - Whether or not to flood diagonally. Defaults to false.
+     * @returns {Array} - An array of objects in the form of {x: x-coord, y: y-coord} of the flooded cells.
+     */
+    flood(x, y, func, diagonal = false) {
+        let [X, Y] = this.#normalizeInput(x, y);
+        if (typeof y == 'function') {
+            func = y;
+        }
+        if (typeof func == 'boolean') {
+            diagonal = func;
+        }
+        if (typeof func != "function") throw new Error(highlight("You can only flood an array with a function. You tried ", "red") + func);
+
+        let flooded = [];
+
+        let queue = [{x: X, y: Y}];
+        while (queue.length > 0) {
+            let current = queue.shift();
+            if (flooded.find(x => x.x == current.x && x.y == current.y)) continue;
+            flooded.push(current);
+            let neighbors = this.neighbors(current.x, current.y, diagonal ? 1 : 0);
+            for (let neighbor of neighbors) {
+                if (func(this.get(current.x, current.y), this.get(neighbor.x, neighbor.y), current.x, current.y, this)) {
+                    queue.push(neighbor);
+                }
+            }
+        }
+        return flooded;
+    }
+    /**
+     * Overlays the provided character on top of each of the given coordinates.
+     * @param {Array} coords - An array of objects in the form of {x: x-coord, y: y-coord} to overlay the character on.
+     * @param {string} character - The character to overlay.
+     * @returns {array} - Returns a new array with the character overlayed.
+     */
+    overlay(coords, character) {
+        let newArray = this.clone();
+        for (let coord of coords) {
+            newArray.set(coord.x, coord.y, character);
+        }
+        return newArray;
+    }
 }
+/** A class for matrices.
+ * @extends array
+ */
+class matrix extends array {
+    constructor(range1, range2 = "undefined", fillItem = "undefined") {
+        super(range1, range2, fillItem);
+    }
+    /**
+     * Clones the matrix and returns a copy.
+     */
+    clone() {
+        let newMatrix = new matrix(this.range1, this.range2);
+        newMatrix.array = this.array.map(x => x.slice());
+        return newMatrix;
+    }
+    /** 
+     * Override map to return a new matrix.
+     */
+    map(func) {
+        if (typeof func == 'undefined') {
+            console.warn(highlight("WARNING: You didn't pass in a function to map. Returning a copy of the matrix.", 'orange'));
+            return this.clone();
+        }
+        if (typeof func != "function") throw new Error(highlight("You can only map a matrix with a function. You tried ", "red") + func);
+        let tempArray = [];
+        for (let i = 0; i < this.array.length; i++) {
+            tempArray.push([]);
+            for (let j = 0; j < this.array[i].length; j++) {
+                tempArray[i].push(func(this.get(this.range1.at(i), this.range2.at(j)), this.range1.at(i), this.range2.at(j), this));
+            }
+        }
+        let returnMatrix = new matrix(this.range1, this.range2);
+        returnMatrix.array = tempArray;
+        return returnMatrix;
+    }
+    /**
+     * Returns the transpose of the matrix.
+     * @returns {matrix} - The transpose of the matrix.
+     */
+    transpose() {
+        let arr = super.transpose();
+        let newMatrix = new matrix(arr.range1, arr.range2);
+        newMatrix.array = arr.array;
+        return newMatrix;
+    }
+    /**
+     * Returns the determinant of the matrix.
+     * @returns {number} - The determinant of the matrix.
+     */
+    determinant() {
+        if (this.width != this.height) throw new Error(highlight("You can only find the determinant of a square matrix.", "red"));
+        if (this.width == 1) return this.get(0,0);
+        if (this.width == 2) return this.get(0,0) * this.get(1,1) - this.get(0,1) * this.get(1,0);
+        let det = 0;
+        for (let i = 0; i < this.width; i++) {
+            det += this.get(0,i) * Math.pow(-1, i) * this.submatrix(0, i).determinant();
+        }
+        return det;
+    }
+    /**
+     * Alias for determinant.
+     * @returns {number} - The determinant of the matrix.
+     */
+    det() {
+        return this.determinant();
+    }
+    /**
+     * Returns the submatrix of the matrix with a row and column removed.
+     * @param {number} row - The row to remove.
+     * @param {number} column - The column to remove.
+     * @returns {matrix} - The submatrix of the matrix.
+     */
+    submatrix(row, column) {
+        let newMatrix = this.clone();
+        newMatrix.array.splice(row, 1);
+        newMatrix.array = newMatrix.array.map(x => {
+            x.splice(column, 1);
+            return x;
+        });
+        newMatrix.range1 = new range(this.range1.start, this.range1.end - 1);
+        newMatrix.range2 = new range(this.range2.start, this.range2.end - 1);
+        return newMatrix;
+    }
+    /**
+     * Returns the cofactor of the matrix.
+     * @returns {matrix} - The cofactor of the matrix.
+     */
+    cofactor() {
+        let newMatrix = this.clone();
+        for (let i = 0; i < this.height; i++) {
+            for (let j = 0; j < this.width; j++) {
+                newMatrix.set(i, j, Math.pow(-1, i + j) * this.submatrix(i, j).determinant());
+            }
+        }
+        return newMatrix;
+    }
+    /**
+     * Returns the adjugate of the matrix.
+     */
+    adjugate() {
+        return this.cofactor().transpose();
+    }
+    /**
+     * Returns the inverse of the matrix.
+     * @returns {matrix} - The inverse of the matrix.
+     */
+    inverse() {
+        if (this.width != this.height) throw new Error(highlight("You can only find the inverse of a square matrix.", "red"));
+        let det = this.determinant();
+        if (det == 0) throw new Error(highlight("You can only find the inverse of a matrix with a non-zero determinant.", "red"));
+        return this.adjugate().map(x => x / det);
+    }
+    /**
+     * Multiplies the matrix by another matrix, a vector, or a scalar.
+     * @param {matrix|vector|number} other - The matrix, vector, or scalar to multiply the matrix by.
+     */
+    multiply(other) {
+        if (other instanceof matrix) {
+            if (this.width != other.height) throw new Error(highlight("You can only multiply a matrix by another matrix if the width of the first matrix is equal to the height of the second matrix.", "red"));
+            let newMatrix = new matrix(new range(this.range1.start, this.range1.end), new range(other.range2.start, other.range2.end));
+            for (let i = 0; i < this.height; i++) {
+                for (let j = 0; j < other.width; j++) {
+                    let sum = 0;
+                    for (let k = 0; k < this.width; k++) {
+                        sum += this.get(i, k) * other.get(k, j);
+                    }
+                    newMatrix.set(i, j, sum);
+                }
+            }
+            return newMatrix;
+        }
+        else if (other instanceof vector) {
+            if (this.width != 2 || this.height != 2) throw new Error(highlight("You can only multiply a 2x2 matrix by a vector.", "red"));
+            return new vector(this.get(0,0) * other.x + this.get(0,1) * other.y, this.get(1,0) * other.x + this.get(1,1) * other.y);
+        }
+        else if (typeof other == "number") {
+            return this.map(x => x * other);
+        }
+        else {
+            throw new Error(highlight("You can only multiply a matrix by another matrix, a vector, or a scalar. You tried to multiply by ", "red") + other);
+        }
+    }
+    /** 
+     * Sets the row of the matrix at the given index.
+     * @param {number} index - The index of the row to set.
+     * @param {vector|Array} row - The row to set the matrix to.
+     */
+    setRow(index, row) {
+        if (index < 0 || index >= this.height) throw new Error(highlight("You can only set a row in the matrix that exists.", "red"));
+        if (row instanceof vector) row = [row.x, row.y];
+        if (row.length != this.width) throw new Error(highlight("You can only set a row in the matrix with the same width as the matrix.", "red"));
+        this.array[index] = row;
+    }
+    /**
+     * Sets the column of the matrix at the given index.
+     * @param {number} index - The index of the column to set.
+     * @param {vector|Array} column - The column to set the matrix to.
+     */
+    setColumn(index, column) {
+        if (index < 0 || index >= this.width) throw new Error(highlight("You can only set a column in the matrix that exists.", "red"));
+        if (column instanceof vector) column = [column.x, column.y];
+        if (column.length != this.height) throw new Error(highlight("You can only set a column in the matrix with the same height as the matrix.", "red"));
+        for (let i = 0; i < this.height; i++) {
+            this.array[i][index] = column[i];
+        }
+    }
+    /**
+     * Gets the row of the matrix at the given index.
+     * @param {number} index - The index of the row to get.
+     * @returns {vector|Array} - The row of the matrix.
+    */
+
+}
+    
 /** Nothing to see here. Just your average jaiden. */ 
 class jaiden {
     /**
@@ -931,7 +1174,7 @@ function unique(arr, resourceIntensive = true) {
                 break;
             }
         }
-        if (!found) uniqueArray.push(item); s
+        if (!found) uniqueArray.push(item);
     }
 }
 /**
@@ -1289,7 +1532,7 @@ const directions = {
     UPRIGHT: new vector(-1, 1),
     DOWNLEFT: new vector(1, -1),
     DOWNRIGHT: new vector(1, 1),
-    // Adjacent vectors in a grid, in the order of up, right, down, left.
+    /** Adjacent vectors in a grid, in the order of up, down, left, right  */
     ADJACENT: [new vector(-1, 0), new vector(1, 0), new vector(0, -1), new vector(0, 1)],
     // Diagonal vectors in a grid, in the order of up-left, up-right, down-left, down-right.
     DIAGONAL: [new vector(-1, -1), new vector(-1, 1), new vector(1, -1), new vector(1, 1)],
@@ -1305,6 +1548,7 @@ module.exports = {
     vector,
     vector3D,
     array,
+    matrix,
     jaiden,
     exists,
     compareItems,
