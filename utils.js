@@ -849,6 +849,40 @@ class array {
         }
         return newArray;
     }
+    /**
+     * Performs Dijkstra's algorithm and returns an array with the distances from the given start coordinate.
+     * @param {number} x - x coordinate of the array. Alternatively can be an object in the form of {x: number, y: number} or an array in the form of [number, number].
+     * @param {number} y - y coordinate of the array. If x is an object or array, this is ignored.
+     * @param {function} isSafe - A function to determine if a cell is safe to move to. It's called with (e, x, y, array) where e is the element, and x and y are the coordinates of e.
+     * @param {boolean} diagonal - Whether or not to move diagonally. Defaults to false.
+     * @returns {array} - An array with the distances from the start coordinate.
+     */
+    dijkstra(x, y, isSafe, diagonal = false) {
+        let [X, Y] = this.#normalizeInput(x, y);
+        if (typeof y == 'function') {
+            isSafe = y;
+        }
+        if (typeof isSafe == 'boolean') {
+            diagonal = isSafe;
+        }
+        if (typeof isSafe != "function") throw new Error(highlight("You can only perform Dijkstra's algorithm on an array with a function. You tried ", "red") + isSafe);
+
+        let distances = this.fill(Infinity);
+        distances.set(X, Y, 0);
+        let queue = [new vector(X, Y)];
+        while (queue.length > 0) {
+            let current = queue.shift();
+            let neighbors = this.neighbors(current.x, current.y, diagonal ? 1 : 0).filter(n => isSafe(this.get(n), n.x, n.y, this));
+            for (let neighbor of neighbors) {
+                let newDistance = distances.get(current) + 1;
+                if (newDistance < distances.get(neighbor)) {
+                    distances.set(neighbor, newDistance);
+                    queue.push(neighbor);
+                }
+            }
+        }
+        return distances;
+    }
 }
 /** A class for matrices.
  * @extends array
@@ -1016,12 +1050,6 @@ class matrix extends array {
             this.array[i][index] = column[i];
         }
     }
-    /**
-     * Gets the row of the matrix at the given index.
-     * @param {number} index - The index of the row to get.
-     * @returns {vector|Array} - The row of the matrix.
-    */
-
 }
     
 /** Nothing to see here. Just your average jaiden. */ 
@@ -1480,6 +1508,15 @@ function toCounts(arr) {
     return counts;
 }
 
+/**
+ * Strips the non-number characters from a string and returns an array of the numbers.
+ * @param {string} str - The string to strip.
+ * @returns {Array} - An array of the numbers.
+*/
+function strip(str) {
+    return str.match(/\d+/g).map(Number);
+}
+
 const colorCodes = {
     black: "\x1b[30m",
     red: "\x1b[31m",
@@ -1566,6 +1603,7 @@ module.exports = {
     ASCII,
     getStringDisplayLength,
     toCounts,
+    strip,
     characters,
     directions
 }
