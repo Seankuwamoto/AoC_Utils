@@ -611,32 +611,66 @@ class array {
      * @param {number} x - x coordinate of the array. Can also be an object in the form of {x: number, y: number} or [number, number].
      * @param {number} y - y coordinate of the array. If x is an object or array, this is ignored.
      * @param {number} size - The radius of the square to get neighbors from. Defaults to 0 (non-diagonal 1-neighbors).
+     * @param {boolean} manhattan - Whether or not to use manhattan distance. Defaults to false.
      * @returns {Array} - An array of objects in the form of {x: x-coord, y: y-coord} of the neighbors.
      */
-    neighbors(x, y, size = 0) {
+    neighbors(x, y, size = 0, manhattan = false) {
         let [X, Y] = this.#normalizeInput(x, y);
-        if ((typeof x == "object" || typeof x == "array") && y != undefined) size = y;
+        if ((typeof x == "object" || typeof x == "array") && y != undefined) {
+            manhattan = size;
+            size = y;
+        }
         let neighbors = [];
-        if (size == 0) {
-            if (this.range1.contains(X - 1) && this.range2.contains(Y)) {
-                neighbors.push({x: X - 1, y: Y});
+        if (!manhattan) { 
+            if (size == 0) {
+                if (this.range1.contains(X - 1) && this.range2.contains(Y)) {
+                    neighbors.push({x: X - 1, y: Y});
+                }
+                if (this.range1.contains(X + 1) && this.range2.contains(Y)) {
+                    neighbors.push({x: X + 1, y: Y});
+                }
+                if (this.range1.contains(X) && this.range2.contains(Y - 1)) {
+                    neighbors.push({x: X, y: Y - 1});
+                }
+                if (this.range1.contains(X) && this.range2.contains(Y + 1)) {
+                    neighbors.push({x: X, y: Y + 1});
+                }
             }
-            if (this.range1.contains(X + 1) && this.range2.contains(Y)) {
-                neighbors.push({x: X + 1, y: Y});
-            }
-            if (this.range1.contains(X) && this.range2.contains(Y - 1)) {
-                neighbors.push({x: X, y: Y - 1});
-            }
-            if (this.range1.contains(X) && this.range2.contains(Y + 1)) {
-                neighbors.push({x: X, y: Y + 1});
+            else {
+                for (let i = X - size; i <= X + size; i++) {
+                    for (let j = Y - size; j <= Y + size; j++) {
+                        if (i == X && j == Y) continue;
+                        if (this.range1.contains(i) && this.range2.contains(j)) {
+                            neighbors.push({x: i, y: j});
+                        }
+                    }
+                }
             }
         }
         else {
-            for (let i = X - size; i <= X + size; i++) {
-                for (let j = Y - size; j <= Y + size; j++) {
-                    if (i == X && j == Y) continue;
-                    if (this.range1.contains(i) && this.range2.contains(j)) {
-                        neighbors.push({x: i, y: j});
+            if (size == 0) {
+                if (this.range1.contains(X - 1) && this.range2.contains(Y)) {
+                    neighbors.push({x: X - 1, y: Y});
+                }
+                if (this.range1.contains(X + 1) && this.range2.contains(Y)) {
+                    neighbors.push({x: X + 1, y: Y});
+                }
+                if (this.range1.contains(X) && this.range2.contains(Y - 1)) {
+                    neighbors.push({x: X, y: Y - 1});
+                }
+                if (this.range1.contains(X) && this.range2.contains(Y + 1)) {
+                    neighbors.push({x: X, y: Y + 1});
+                }
+            }
+            else {
+                for (let i = X - size; i <= X + size; i++) {
+                    for (let j = Y - size; j <= Y + size; j++) {
+                        if (i == X && j == Y) continue;
+                        if (Math.abs(i - X) + Math.abs(j - Y) <= size) {
+                            if (this.range1.contains(i) && this.range2.contains(j)) {
+                                neighbors.push({x: i, y: j});
+                            }
+                        }
                     }
                 }
             }
@@ -1517,6 +1551,17 @@ function strip(str) {
     return str.match(/\d+/g).map(Number);
 }
 
+/**
+ * Returns the manhattan distance between two points or vectors.
+ * @param {number|vector} p1 - The first point.
+ * @param {number|vector} p2 - The second point.
+ * @returns {number} - The manhattan distance between the two points.
+ */
+function manhattanDistance(p1, p2) {
+    if (!exists(p1.x) || !exists(p1.y) || !exists(p2.x) || !exists(p2.y)) throw new Error(highlight("You can only find the manhattan distance between two points.", "red"));
+    return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
+}
+
 const colorCodes = {
     black: "\x1b[30m",
     red: "\x1b[31m",
@@ -1604,6 +1649,7 @@ module.exports = {
     getStringDisplayLength,
     toCounts,
     strip,
+    manhattanDistance,
     characters,
     directions
 }
