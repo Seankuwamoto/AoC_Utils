@@ -917,6 +917,18 @@ class array {
         }
         return distances;
     }
+    /**
+     * Takes two grids and combines them pointwise using the given function to dtermine the new value.
+     * @param {array} other - The other array to combine with.
+     * @param {function} func - A function to combine the two arrays with. It's called with (e1, e2, x, y, array1, array2) where e1 and e2 are the elements of the two arrays, and x and y are the coordinates of e1 and e2.
+     * @returns {array} - A new array with the two arrays combined.
+     */
+    combine(other, func) {
+        if (!(other instanceof array)) throw new Error(highlight("You can only combine two arrays. You tried to combine ", "red") + other);
+        if (typeof func != "function") throw new Error(highlight("You can only combine arrays with a function. You tried ", "red") + func);
+        if (this.width != other.width || this.height != other.height) throw new Error(highlight("You can only combine two arrays with the same dimensions.", "red"));
+        return this.map((e, x, y) => func(e, other.get(x, y), x, y, this, other));
+    }
 }
 /** A class for matrices.
  * @extends array
